@@ -19,7 +19,7 @@ type embeddingObject struct {
 }
 
 type embeddingResponse struct {
-	Embeddings []embeddingObject `json:"embeddings"`
+	Embeddings []embeddingObject `json:"data"`
 	Object     string            `json:"object"`
 	Model      string            `json:"model"`
 }
@@ -54,6 +54,10 @@ func sendEmbeddingRequest(input string, model string, apiKey string) ([]float64,
 	err = json.NewDecoder(resp.Body).Decode(&embeddingResp)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("request failed with status code %d", resp.StatusCode)
 	}
 
 	if len(embeddingResp.Embeddings) == 0 {
